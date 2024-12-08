@@ -70,3 +70,108 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Base List Styles */
+.tiptap ul,
+.tiptap ol {
+  padding-left: 1.5rem;
+  margin: 1.25rem 0;
+  color: #000;
+}
+
+/* Unordered List Styles */
+.tiptap ul {
+  list-style-type: disc;
+}
+
+/* Ordered List Styles */
+.tiptap ol {
+  list-style-type: decimal;
+}
+
+/* List Item Text Styles */
+.tiptap li p {
+  margin: 0.25em 0;
+  line-height: 1.5;
+}
+
+/* Task List Container */
+.tiptap ul[data-type="taskList"] {
+  padding-left: 1.5rem;
+  margin: 1.25rem 0;
+  list-style: none;
+}
+
+/* Task List Item Styles */
+.tiptap li[data-type="taskItem"] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Task Checkbox Styles */
+.tiptap li[data-type="taskItem"] input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #007BFF;
+  border-radius: 0.25rem;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.tiptap {
+  :first-child {
+    margin-top: 0;
+  }
+
+  
+
+
+  ul,
+  ol {
+    padding: 0 1rem;
+    margin: 1.25rem 1rem 1.25rem 0.4rem;
+
+    li p {
+      margin-top: 0.25em;
+      margin-bottom: 0.25em;
+    }
+  }
+
+
+  ul[data-type="taskList"] {
+    list-style: none;
+    margin-left: 0;
+    padding: 0;
+
+    li {
+      align-items: flex-start;
+      display: flex;
+
+      > label {
+        flex: 0 0 auto;
+        margin-right: 0.5rem;
+        user-select: none;
+      }
+
+      > div {
+        flex: 1 1 auto;
+      }
+    }
+
+    input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    ul[data-type="taskList"] {
+      margin: 0;
+    }
+  }
+}
