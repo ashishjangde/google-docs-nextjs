@@ -14,6 +14,16 @@ import ImageResize from 'tiptap-extension-resize-image';
 import { useEditorStore } from '@/store/use-editor-store';
 import Underline from '@tiptap/extension-underline';
 import FontFamily from '@tiptap/extension-font-family';
+import TextStyle from '@tiptap/extension-text-style';
+import Highlight from '@tiptap/extension-highlight';
+import { Color } from '@tiptap/extension-color'
+
+import { Extension } from '@tiptap/core'
+
+const TextSizeIncrease = Extension.create({
+  name: 'textSizeIncrease',
+  
+})
 
 export default function Editor() {
   const { setEditor } = useEditorStore();
@@ -51,7 +61,12 @@ export default function Editor() {
         },
         extensions: [
           StarterKit,
+          Highlight.configure({
+            multicolor: true,
+          }),
+          Color,
           FontFamily,
+          TextStyle,
           Underline,
           Image,
           ImageResize,
