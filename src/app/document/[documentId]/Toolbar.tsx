@@ -1,6 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { BoldIcon, Italic, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, PrinterIcon, Redo, RemoveFormattingIcon, SpellCheckIcon, Underline, Undo, ChevronDownIcon, Palette, Type, HighlighterIcon } from 'lucide-react';
+import { BoldIcon, Italic, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, PrinterIcon, Redo, RemoveFormattingIcon, SpellCheckIcon, Underline, Undo, ChevronDownIcon, Palette, Type, HighlighterIcon, Link2Icon, Image, ImageIcon, Upload, Link2, UploadCloud, Link, MoveLeftIcon, AlignLeft, AlignRightIcon, AlignCenter } from 'lucide-react';
 import React, {  useEffect, useState } from 'react';
 import { useEditorStore } from '@/store/use-editor-store';
 import { Separator } from '@/components/ui/separator';
@@ -12,7 +12,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {type Level }from '@tiptap/extension-heading';
 import {ChromePicker, type ColorResult }from 'react-color';
-;
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
 
 
 interface ToolbarButtonProps {
@@ -35,8 +46,131 @@ const ToolbarButton = ({ onClick, isActive, icon: Icon }: ToolbarButtonProps) =>
   );
 };
 
-const ToolBarImageUpload = () => {
-  
+const alignOptions = [
+  { label: AlignLeft, value: 'left' },
+  { label: AlignCenter, value: 'center' },
+  { label: AlignRightIcon, value: 'right' },
+]
+
+const ToolbarAlignButton = ()=>{
+
+}
+
+const ToolbarImageButton = () => {
+  const { editor } = useEditorStore();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>('');
+
+  const onChange = (src: string) => {
+    editor?.chain().focus().setImage({ src }).run();
+  };
+
+  const onUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const imageUrl = URL.createObjectURL(file);
+        onChange(imageUrl);
+      }
+    };
+
+    input.click();
+  };
+
+  const handleImageUrlSubmit = () => {
+    if (imageUrl) {
+      onChange(imageUrl);
+      setImageUrl('');
+      setDialogOpen(false);
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="text-sm h-7 min-w-7 flex items-center justify-center rounded-sm hover:bg-neutral-200/80"
+        >
+          <ImageIcon className='size-4' />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onSelect={() => setDialogOpen(true)}
+           className={cn(
+            'flex items-center justify-between px-3 py-2 rounded-sm cursor-pointer',
+            'hover:bg-neutral-100',
+          )} 
+          >
+        <span  className='flex items-center justify-center gap-2'><Link className='size-4' /> Paste link</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={onUpload} 
+         className={cn(
+          'flex items-center justify-between px-3 py-2 rounded-sm cursor-pointer',
+          'hover:bg-neutral-100',
+        )}
+        >
+        <span className='flex items-center justify-center gap-2'><Upload className='size-4' /> Upload</span> 
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Insert Image URL</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            <Input
+              placeholder='https://example.com/image.jpg'
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+            />
+          </DialogDescription>
+          <DialogFooter>
+            <Button onClick={handleImageUrlSubmit}>Insert</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </DropdownMenu>
+  );
+};
+
+const ToolbarLinkButton = () => {
+  const {editor} = useEditorStore();
+  const [value, setValue] = useState(''); 
+  const onChange = (href : string) => {
+    editor?.chain().focus().extendMarkRange('link').setLink({href}).run();
+    setValue("");
+  }
+
+  return(
+    <DropdownMenu onOpenChange={(open) => {
+      if(!open) {
+        setValue(editor?.getAttributes('link')?.href || '');
+    }}}>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="text-sm h-7 min-w-7 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80"
+        >
+          <Link2Icon className='size-4' />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className='p-2.5 flex items-center gap-x-2'>
+            <Input
+            placeholder='https://example.com'
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+             />
+            <Button
+            className=''
+            onClick={() => onChange(value)}
+            >Apply </Button>
+      
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 const COLOR_PALETTE = [
@@ -52,39 +186,26 @@ const COLOR_PALETTE = [
 
 const ToolbarTextColorPicker = () => {
   const { editor } = useEditorStore();
-  const [currentColor, setCurrentColor] = useState("#000000");
-
-  useEffect(() => {
-    const color = editor?.getAttributes("textColor")?.color || "#000000";
-    setCurrentColor(color);
-  }, [editor]);
-
-  const handleColorSelect = (color: string) => {
-    editor?.chain().focus().setColor(color).run();
-    setCurrentColor(color);
-  };
-
-  const handleCustomColorChange = (color: ColorResult) => {
-    const newColor = color.hex;
-    editor?.chain().focus().setColor(newColor).run();
-    setCurrentColor(newColor);
+  
+  const value = editor?.getAttributes('textStyle')?.color || '#000000';
+  const onChange = (color: ColorResult | string) => {
+    const colorHex = typeof color === 'string' ? color : color.hex;
+    editor?.chain().focus().setColor(colorHex).run();
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="h-9 min-w-10 flex flex-col items-center justify-between 
-            text-sm rounded-sm hover:bg-neutral-100
-            border-none outline-none"
+          className="text-sm h-7 min-w-7 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80"
         >
-          <span className="truncate text-lg">
+          <span className="truncate text-xl text-black/80">
             A
           </span>
           <div
             className="w-8 h-[4.3px] border"
-            style={{ 
-              backgroundColor: currentColor
+            style={{
+              backgroundColor: value
             }}
           />
         </button>
@@ -95,29 +216,30 @@ const ToolbarTextColorPicker = () => {
         min-w-[200px] p-3 rounded-sm"
         align="start"
       >
+        {/* Color Palette Grid */}
         <div className="flex flex-wrap justify-center gap-2 mb-3">
           {COLOR_PALETTE.map((color) => (
-            <DropdownMenuItem asChild key={color}>
+            <DropdownMenuItem key={color} asChild>
               <button
-                onClick={() => handleColorSelect(color)}
+                onClick={() => onChange(color)}
                 className="w-6 h-6 rounded-full hover:scale-110 
                 transition-transform border border-neutral-200"
                 style={{
                   backgroundColor: color,
-                  boxShadow: currentColor === color 
-                    ? "0 0 0 2px blue" 
+                  boxShadow: value === color
+                    ? "0 0 0 2px blue"
                     : "none",
                 }}
               />
             </DropdownMenuItem>
           ))}
         </div>
-        
+
         {/* Custom Color Picker */}
         <div className="flex justify-center">
           <ChromePicker
-            color={currentColor}
-            onChange={handleCustomColorChange}
+            color={value}
+            onChange={onChange}
             disableAlpha={true}
             styles={{
               default: {
@@ -136,36 +258,28 @@ const ToolbarTextColorPicker = () => {
 
 const ToolbarHighlightColorPicker = () => {
   const { editor } = useEditorStore();
-  const [currentColor, setCurrentColor] = useState("#FFFFFF");
-
-  useEffect(() => {
-    const color = editor?.getAttributes("highlight")?.color || "#FFFFFF";
-    setCurrentColor(color);
-  }, [editor]);
+  
+  const currentColor = editor?.getAttributes("highlight")?.color || "#FFFFFF";
 
   const handleColorSelect = (color: string) => {
     editor?.chain().focus().setHighlight({ color }).run();
-    setCurrentColor(color);
   };
 
   const handleCustomColorChange = (color: ColorResult) => {
     const newColor = color.hex;
     editor?.chain().focus().setHighlight({ color: newColor }).run();
-    setCurrentColor(newColor);
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="h-9 min-w-10 flex flex-col items-center justify-between 
-            text-sm rounded-sm hover:bg-neutral-100
-            border-none outline-none"
+          className="text-sm h-7 min-w-7 flex flex-col items-center justify-center rounded-sm hover:bg-neutral-200/80"
         >
-          <HighlighterIcon size={20} />
+          <HighlighterIcon className='size-6 text-black/80' />
           <div
             className="w-8 h-[4.3px] border"
-            style={{ 
+            style={{
               backgroundColor: currentColor
             }}
           />
@@ -177,24 +291,25 @@ const ToolbarHighlightColorPicker = () => {
         min-w-[200px] p-3 rounded-sm"
         align="start"
       >
+        {/* Color Palette Grid */}
         <div className="flex flex-wrap justify-center gap-2 mb-3">
           {COLOR_PALETTE.map((color) => (
-            <DropdownMenuItem asChild key={color}>
+            <DropdownMenuItem key={color} asChild>
               <button
                 onClick={() => handleColorSelect(color)}
                 className="w-6 h-6 rounded-full hover:scale-110 
                 transition-transform border border-neutral-200"
                 style={{
                   backgroundColor: color,
-                  boxShadow: currentColor === color 
-                    ? "0 0 0 2px blue" 
+                  boxShadow: currentColor === color
+                    ? "0 0 0 2px blue"
                     : "none",
                 }}
               />
             </DropdownMenuItem>
           ))}
         </div>
-        
+
         {/* Custom Color Picker */}
         <div className="flex justify-center">
           <ChromePicker
@@ -215,7 +330,6 @@ const ToolbarHighlightColorPicker = () => {
     </DropdownMenu>
   );
 };
-
 
 const ToolbarHeadingDropdown = () => {
   const { editor } = useEditorStore();
@@ -445,8 +559,8 @@ export default function Toolbar() {
       <ToolbarTextColorPicker />
       <ToolbarHighlightColorPicker />
       <Separator orientation='vertical' className='h-6 bg-neutral-300' />
-      {/* TODO: Add Link Button */}
-      {/* TODO: Add Image Button */}
+      <ToolbarLinkButton />
+      <ToolbarImageButton />
       {/* TODO: Add Alignment Options */}
       {/* TODO: Add Line Height Selector */}
       {/* TODO: Add List Options */}

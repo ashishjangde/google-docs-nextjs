@@ -17,6 +17,7 @@ import FontFamily from '@tiptap/extension-font-family';
 import TextStyle from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
 import { Color } from '@tiptap/extension-color'
+import Link from '@tiptap/extension-link'
 
 import { Extension } from '@tiptap/core'
 
@@ -71,6 +72,11 @@ export default function Editor() {
           Image,
           ImageResize,
           TaskList,
+          Link.configure({
+            openOnClick: false,
+            autolink: true,
+            defaultProtocol: 'https',
+          }),
           TaskItem.configure({
         nested: true,
       }),
