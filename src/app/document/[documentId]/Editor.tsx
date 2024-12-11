@@ -19,12 +19,9 @@ import Highlight from '@tiptap/extension-highlight';
 import { Color } from '@tiptap/extension-color'
 import Link from '@tiptap/extension-link'
 
-import { Extension } from '@tiptap/core'
+import TextAlign from '@tiptap/extension-text-align'
 
-const TextSizeIncrease = Extension.create({
-  name: 'textSizeIncrease',
-  
-})
+
 
 export default function Editor() {
   const { setEditor } = useEditorStore();
@@ -70,6 +67,9 @@ export default function Editor() {
           TextStyle,
           Underline,
           Image,
+          TextAlign.configure({
+            types: ['heading', 'paragraph'],
+          }),
           ImageResize,
           TaskList,
           Link.configure({

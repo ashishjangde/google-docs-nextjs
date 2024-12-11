@@ -1,7 +1,7 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { BoldIcon, Italic, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, PrinterIcon, Redo, RemoveFormattingIcon, SpellCheckIcon, Underline, Undo, ChevronDownIcon, Palette, Type, HighlighterIcon, Link2Icon, Image, ImageIcon, Upload, Link2, UploadCloud, Link, MoveLeftIcon, AlignLeft, AlignRightIcon, AlignCenter } from 'lucide-react';
-import React, {  useEffect, useState } from 'react';
+import { BoldIcon, Italic, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, PrinterIcon, Redo, RemoveFormattingIcon, SpellCheckIcon, Underline, Undo, ChevronDownIcon, Palette, Type, HighlighterIcon, Link2Icon, Image, ImageIcon, Upload, Link2, UploadCloud, Link, MoveLeftIcon, AlignLeft, AlignRightIcon, AlignCenter, AlignRight, AlignJustify, AlignLeftIcon, ListIcon, ListOrdered } from 'lucide-react';
+import React, {  useState } from 'react';
 import { useEditorStore } from '@/store/use-editor-store';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -21,8 +21,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
+
 
 
 
@@ -46,15 +46,101 @@ const ToolbarButton = ({ onClick, isActive, icon: Icon }: ToolbarButtonProps) =>
   );
 };
 
-const alignOptions = [
-  { label: AlignLeft, value: 'left' },
-  { label: AlignCenter, value: 'center' },
-  { label: AlignRightIcon, value: 'right' },
-]
-
-const ToolbarAlignButton = ()=>{
-
+const ListButton = () => {
+const { editor } = useEditorStore();
+const Lists = [
+  { 
+    label: 'Bullet List', 
+    icon: ListIcon,
+    isActive: editor?.isActive('bulletList') || false,
+    onclick: () => editor?.chain().focus().toggleBulletList().run()
+   },
+   { 
+    label: 'Order List', 
+    icon: ListOrdered,
+    isActive: editor?.isActive('orderedList') || false,
+    onclick: () => editor?.chain().focus().toggleOrderedList().run()
+   },
+];
+  
+return (
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <button 
+        className="text-sm h-7 min-w-7 flex items-center justify-center rounded-sm hover:bg-neutral-200/80"
+      >
+        <ListIcon className='size-4' />
+      </button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent className='p-0'>
+      {Lists.map(({ label, icon: Icon, isActive, onclick }) => (
+          <DropdownMenuItem
+          key={label}
+          onSelect={onclick}
+          className={cn(
+            'flex items-center justify-between px-3 py-2 rounded-sm cursor-pointer hover:bg-neutral-200/80',
+            isActive && 'bg-neutral-200/80'
+          )}
+          >
+          <Icon className='size-4' />
+          <span className='text-sm ml-2'>{label}</span>
+          </DropdownMenuItem>
+      ))}
+    </DropdownMenuContent>
+  </DropdownMenu>
+);
 }
+
+
+
+const TextAlignmentButtons = () => {
+  const { editor } = useEditorStore();
+
+  const alignOptions = [
+    { label: 'Left', icon: AlignLeft, value: 'left' },
+    { label: 'Center', icon: AlignCenter, value: 'center' },
+    { label: 'Right', icon: AlignRight, value: 'right' },
+    { label: 'Justify', icon: AlignJustify, value: 'justify' },
+  ];
+
+  
+  const currentAlignment = 
+    alignOptions.find(option => 
+      editor?.isActive({ textAlign: option.value })
+    )?.value || 'left';
+
+  const CurrentAlignmentIcon = alignOptions.find(
+    option => option.value === currentAlignment
+  )?.icon || AlignLeft;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button 
+          className="text-sm h-7 min-w-7 flex items-center justify-center rounded-sm hover:bg-neutral-200/80"
+        >
+          <CurrentAlignmentIcon className='size-4' />
+        </button>
+      </DropdownMenuTrigger>
+      
+      <DropdownMenuContent className='p-0'>
+        {alignOptions.map(({ label, icon: Icon, value }) => (
+            <DropdownMenuItem
+            key={value}
+            onSelect={() => editor?.chain().focus().setTextAlign(value).run()}
+            className={cn(
+              'flex items-center justify-between px-3 py-2 rounded-sm cursor-pointer hover:bg-neutral-200/80',
+              editor?.isActive({ textAlign: value }) && 'bg-neutral-200/80'
+            )}
+            >
+            <Icon className='size-4' />
+            <span className='text-sm ml-2'>{label}</span>
+            </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 const ToolbarImageButton = () => {
   const { editor } = useEditorStore();
@@ -561,9 +647,11 @@ export default function Toolbar() {
       <Separator orientation='vertical' className='h-6 bg-neutral-300' />
       <ToolbarLinkButton />
       <ToolbarImageButton />
-      {/* TODO: Add Alignment Options */}
+      <Separator orientation='vertical' className='h-6 bg-neutral-300' />
+     <TextAlignmentButtons  />
+      <Separator orientation='vertical' className='h-6 bg-neutral-300' />
       {/* TODO: Add Line Height Selector */}
-      {/* TODO: Add List Options */}
+      <ListButton />
       {sections[2].map((button, index) => (
         <ToolbarButton key={index} {...button} />
       ))}
