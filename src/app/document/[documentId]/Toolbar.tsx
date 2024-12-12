@@ -1,6 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { BoldIcon, Italic, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, PrinterIcon, Redo, RemoveFormattingIcon, SpellCheckIcon, Underline, Undo, ChevronDownIcon, Palette, Type, HighlighterIcon, Link2Icon, Image, ImageIcon, Upload, Link2, UploadCloud, Link, MoveLeftIcon, AlignLeft, AlignRightIcon, AlignCenter, AlignRight, AlignJustify, AlignLeftIcon, ListIcon, ListOrdered } from 'lucide-react';
+import { BoldIcon, Italic, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, PrinterIcon, Redo, RemoveFormattingIcon, SpellCheckIcon, Underline, Undo, ChevronDownIcon, Palette, Type, HighlighterIcon, Link2Icon, Image, ImageIcon, Upload, Link2, UploadCloud, Link, MoveLeftIcon, AlignLeft, AlignRightIcon, AlignCenter, AlignRight, AlignJustify, AlignLeftIcon, ListIcon, ListOrdered, MinusIcon, PlusIcon, ListCollapseIcon } from 'lucide-react';
 import React, {  useState } from 'react';
 import { useEditorStore } from '@/store/use-editor-store';
 import { Separator } from '@/components/ui/separator';
@@ -21,7 +21,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+
 
 
 
@@ -45,6 +46,139 @@ const ToolbarButton = ({ onClick, isActive, icon: Icon }: ToolbarButtonProps) =>
     </button>
   );
 };
+
+const LineHeightButton = () => {
+  const { editor } = useEditorStore();
+
+
+  const nodeType = editor?.isActive('heading') ? 'heading' : 'paragraph';
+  const attrs = editor?.getAttributes(nodeType);
+  
+  const lineHeightOptions = [
+    {label: 'Normal', value: 'normal'},
+    {label: '1.15', value: '1.15'},
+    {label: '1.5', value: '1.5'},
+    {label: 'double', value: '2'},
+  ];
+
+  const currentLineHeight = attrs?.lineHeight || 'normal';
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button 
+          className="text-sm h-7 px-2 flex items-center gap-2 rounded-sm hover:bg-neutral-200/80"
+          title="Line Height"
+        >
+          <ListCollapseIcon className='size-4' />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-32">
+        {lineHeightOptions.map(({label, value}) => (
+          <DropdownMenuItem 
+            key={value} 
+            onSelect={() => {
+              if (value === 'normal') {
+                editor?.chain().focus().unsetLineHeight().run();
+              } else {
+                editor?.chain().focus().setLineHeight(value).run();
+              }
+            }}
+            className={cn(
+              'flex items-center justify-between px-3 py-2',
+              currentLineHeight === value && 'bg-neutral-100'
+            )}
+          >
+            {label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const FontSizeButton = () => {
+  const { editor } = useEditorStore();
+  const  currentFontSize = editor?.getAttributes('textStyle')?.fontSize 
+  ? editor?.getAttributes('textStyle')?.fontSize.replace('px', '') 
+  : '16';
+  const [fontSize, setFontSize] = useState(currentFontSize);
+  const [inputValue, setInputValue] = useState(fontSize);
+  const [editing, setEditing] = useState(false);
+  const updateFontSize = (newSize:string) => {
+    const size = parseInt(newSize);
+      if(!isNaN(size) && size > 0) {
+        editor?.chain().focus().setFontSize(`${size}px`).run();
+        setFontSize(newSize);
+        setInputValue(newSize);
+        setEditing(false);
+      }
+    }
+    const handelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.target.value);
+    }
+    const handleInputBlur = () => {
+      updateFontSize(inputValue);
+    }
+    const handelKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if(e.key === 'Enter') {
+        e.preventDefault();
+        updateFontSize(inputValue);
+        editor?.commands.focus();
+      }
+    }
+    const increaseFontSize = () => {
+      const size = parseInt(fontSize);
+      if(size < 96) {
+        updateFontSize(`${size + 1}`);
+      }
+    }
+    const decreaseFontSize = () => {
+      const size = parseInt(fontSize);
+      if(size > 2) {
+        updateFontSize(`${size - 1}`);
+      }
+}
+return (
+  <div className='flex items-center gap-x-0.5'>
+    <button
+      onClick={decreaseFontSize}
+      className='h-7 w-7 shrink-0 flex  items-center justify-center rounded-sm hover:bg-neutral-200/80'>
+    <MinusIcon className='size-4' />
+    </button>
+    {
+      editing ? (
+        <input
+         type = 'text'
+         value={inputValue}
+         onChange={handelInputChange}
+         onBlur={handleInputBlur}
+         onKeyDown={handelKeyDown}
+        className='h-7 w-10 text-sm border border-neutral-400 text-center rounded-sm bg-transparent focus:outline-none focus:ring-0'
+        />
+      ):(
+        <button
+        onClick={() => {
+          setEditing(true);
+          setFontSize(currentFontSize);
+
+        }}
+        className='h-7 w-10 text-sm border border-neutral-400 text-center rounded-sm hover:bg-transparent cursor-text'
+        >
+        {currentFontSize}
+        </button>
+      )
+    }
+    <button
+      onClick={increaseFontSize}
+      className='h-7 w-7 shrink-0 flex  items-center justify-center rounded-sm hover:bg-neutral-200/80'>
+    <PlusIcon className='size-4' />
+    </button>
+  </div>
+
+);
+  
+}
 
 const ListButton = () => {
 const { editor } = useEditorStore();
@@ -549,6 +683,8 @@ const ToolbarDropdownFontFamily = () => {
 
 export default function Toolbar() {
   const { editor } = useEditorStore();
+  console.log('Editor in Toolbar:', editor);
+
   const sections: {
     label: string;
     icon: LucideIcon;
@@ -627,7 +763,7 @@ export default function Toolbar() {
   ];
 
   return (
-    <div className='bg-[#F1F4F9] px-2.5 py-0.5 rounded-[24px] min-h-[40px] flex items-center gap-x-0.5 overflow-x-auto'>
+    <div className='bg-[#F1F4F9] px-2.5 py-0.5 rounded-[24px] min-h-[40px] flex items-center gap-x-0.5 print:hidden overflow-x-auto'>
       {sections[0].map((button, index) => (
         <ToolbarButton key={index} {...button} />
       ))}
@@ -636,7 +772,7 @@ export default function Toolbar() {
       <Separator orientation='vertical' className='h-6 bg-neutral-300' />
       <ToolbarHeadingDropdown />
       <Separator orientation='vertical' className='h-6 bg-neutral-300' />
-      {/* TODO: Add Font Size Selector */}
+      <FontSizeButton />
       <Separator orientation='vertical' className='h-6 bg-neutral-300' />
       {sections[1].map((button, index) => (
         <ToolbarButton key={index} {...button} />
@@ -650,7 +786,7 @@ export default function Toolbar() {
       <Separator orientation='vertical' className='h-6 bg-neutral-300' />
      <TextAlignmentButtons  />
       <Separator orientation='vertical' className='h-6 bg-neutral-300' />
-      {/* TODO: Add Line Height Selector */}
+      <LineHeightButton/>
       <ListButton />
       {sections[2].map((button, index) => (
         <ToolbarButton key={index} {...button} />

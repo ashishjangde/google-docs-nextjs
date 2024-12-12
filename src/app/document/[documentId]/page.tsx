@@ -1,4 +1,3 @@
-import { Edit } from 'lucide-react';
 import React from 'react'
 import Editor from './Editor';
 import Toolbar from './Toolbar';
