@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import {Inter} from "next/font/google";
-
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { ConvexClientProvider } from "@/components/ConvexProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,8 +24,13 @@ export default function RootLayout({
       <body
        className={inter.className}
       >
-        {children}
+         <ConvexClientProvider>
+         <NuqsAdapter>
+      {children}
+       </NuqsAdapter> 
+       </ConvexClientProvider> 
       </body>
+      
     </html>
   );
 }
