@@ -1,5 +1,5 @@
 'use client';
-import React from 'react'
+import React, { useState } from 'react'
 import {
     Carousel,
     CarouselContent,
@@ -7,15 +7,33 @@ import {
     CarouselNext,
     CarouselPrevious,
   } from "@/components/ui/carousel"
-import { Label } from '@radix-ui/react-menubar'
 import { templates } from '@/constants/template'
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { api } from '../../../convex/_generated/api';
+import { useMutation } from 'convex/react';
+import { useToast } from "@/hooks/use-toast"
 
 export default function TemplateGallary() {
 
-  const router = useRouter();
-  
+  const router = useRouter()
+  const [creating , setCreating] = useState(false)
+  const create = useMutation(api.document.create)
+ 
+  const {toast} = useToast();
+  const createDocument = (label : string , content : string)=>{
+    setCreating(true)
+    create({title : label ,  initialContent : content })
+    .then((documentId) => {
+      toast({
+        title: "document created successfully",
+      })
+      router.push(`/document/${documentId}`);
+    })
+    .finally(() => {
+      setCreating(false);
+    });
+  }
 
   return (
     <div className="bg-[#F1F3F4]">
@@ -34,6 +52,8 @@ export default function TemplateGallary() {
                   )}
                 >
                   <button
+                  disabled={creating}
+                  onClick={()=>createDocument(template.label , template.initialContent)}
                     style={{
                       backgroundImage: `url(${template.imageUrl})`,
                       backgroundSize: "cover",

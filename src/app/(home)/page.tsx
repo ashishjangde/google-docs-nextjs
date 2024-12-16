@@ -1,3 +1,4 @@
+import DocumentTable from "./DocumentTable";
 import Navbar from "./Navbar";
 import TemplateGallary from "./TemplateGallary";
 
@@ -9,8 +10,10 @@ export default function Home() {
       </div>
       <div className="mt-16">
         <TemplateGallary/>
-       
+       <DocumentTable/>
       </div>
    </div>
   );
 }
+
+// http://localhost:3000/
