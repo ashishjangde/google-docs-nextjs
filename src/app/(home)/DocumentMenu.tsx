@@ -25,41 +25,38 @@ export default function  DocumentMenu({
     onNewTab
 }: DocumentMenuProps) {
     return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }}>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <MoreVertical className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent >
-            <RenameDialog documentId={documentId} initialTitle={title}>
-              <DropdownMenuItem
-                 onSelect={(e) => e.preventDefault()}
-                 onClick={(e) => e.stopPropagation()}
-              >
-                <FilePenIcon className="size-4 mr-2" />
-                Rename
-              </DropdownMenuItem>
-            </RenameDialog>
-            <RemoveDialog documentId={documentId}>
-              <DropdownMenuItem
-                onSelect={(e) => e.preventDefault()}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <TrashIcon className="size-4 mr-2" />
-                Remove
-              </DropdownMenuItem>
-            </RemoveDialog>
-            <DropdownMenuItem
-              onClick={() => onNewTab(documentId)}
-            >
-              <ExternalLinkIcon className="size-4 mr-2" />
-              Open in a new tab
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <MoreVertical className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <RenameDialog documentId={documentId} initialTitle={title}>
+          <DropdownMenuItem
+            onSelect={(e) => e.preventDefault()}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <FilePenIcon className="size-4 mr-2" />
+            Rename
+          </DropdownMenuItem>
+        </RenameDialog>
+        <RemoveDialog documentId={documentId}>
+          <DropdownMenuItem
+            onSelect={(e) => e.preventDefault()}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <TrashIcon className="size-4 mr-2" />
+            Remove
+          </DropdownMenuItem>
+        </RemoveDialog>
+        <DropdownMenuItem
+          onClick={() => onNewTab(documentId)}
+        >
+          <ExternalLinkIcon className="size-4 mr-2" />
+          Open in a new tab
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
     )
 }
