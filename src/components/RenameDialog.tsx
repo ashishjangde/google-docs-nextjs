@@ -15,6 +15,7 @@ import {
 import { Button } from "./ui/button";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
+import { Input } from "./ui/input";
 
 interface RenameDialogProps {
   documentId: Id<"documents">;
@@ -86,11 +87,10 @@ export const RenameDialog = ({
             </DialogDescription>
           </DialogHeader>
           <div className="my-6">
-            <input
+            <Input
               value={title}
               onChange={handleInputChange}
               placeholder="Document name"
-              className="w-full px-4 py-2 text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
               autoFocus
             />
           </div>

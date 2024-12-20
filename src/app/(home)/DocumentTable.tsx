@@ -14,6 +14,7 @@ import { Doc } from '../../../convex/_generated/dataModel'
 import { PaginationStatus } from 'convex/react'
 import { LoaderIcon } from 'lucide-react'
 import DocumentRow from './DocumentRow'
+import { Button } from '@/components/ui/button'
 
 interface DocumentTableProps {
 documents : Doc<"documents">[] | undefined
@@ -61,6 +62,18 @@ status
       </Table>
      )}
      <div>
+        {status === "LoadingFirstPage" || status === "LoadingMore" ? (
+          <div className="flex justify-center items-center h-24">
+            <LoaderIcon className="animate-spin text-muted-foreground size-5" />
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <Button
+            variant={"ghost"}
+            disabled={status === "CanLoadMore" ? false : true} 
+            onClick={() => loadMore(5)}>{status === "CanLoadMore" ?  "Load More" : "End of Results"}</Button>
+          </div>
+        )}
 
      </div>
    </div>

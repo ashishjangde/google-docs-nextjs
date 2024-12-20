@@ -2,6 +2,7 @@ import React from 'react'
 import Editor from './Editor';
 import Toolbar from './Toolbar';
 import Navbar from './Navbar';
+import { Room } from './Room';
 
 interface pageProps {
   params: Promise<{ documentId: string }>
@@ -16,7 +17,9 @@ export default async function page({ params }: pageProps) {
           <Toolbar />
         </div>
         <div className="pt-[114px] print:pt-0">
+          <Room >
           <Editor  />
+          </Room>
         </div>
       </div>
   )

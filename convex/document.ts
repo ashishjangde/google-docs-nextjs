@@ -30,7 +30,7 @@ export const create = mutation({
     if (!user) {
       throw new ConvexError("Unathorized");
     }
-
+    console.log(user);
     const organizationId = (user.organization_id ?? undefined) as
     | string
     | undefined;

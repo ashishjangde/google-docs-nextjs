@@ -19,7 +19,7 @@ import Highlight from '@tiptap/extension-highlight';
 import { Color } from '@tiptap/extension-color'
 import Link from '@tiptap/extension-link'
 import { FontSizeExtension } from '@/extension/font-size';
-
+import { useLiveblocksExtension } from "@liveblocks/react-tiptap";
 import TextAlign from '@tiptap/extension-text-align'
 
 import { LineHeightExtension } from '@/extension/line-height';
@@ -27,6 +27,7 @@ import {Ruler} from './Ruler';
 
 export default function Editor() {
   const { setEditor } = useEditorStore();
+  const liveblocks = useLiveblocksExtension();
 
   const editor = useEditor({ 
     immediatelyRender: false,
@@ -61,12 +62,15 @@ export default function Editor() {
       },
     },
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        history : false,
+      }),
       FontSizeExtension,
       Highlight.configure({
         multicolor: true,
       }),
       LineHeightExtension,
+      liveblocks,
       Color,
       FontFamily,
       TextStyle,
