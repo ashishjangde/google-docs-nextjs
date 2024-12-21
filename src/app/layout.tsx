@@ -4,6 +4,8 @@ import {Inter} from "next/font/google";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { ConvexClientProvider } from "@/components/ConvexProvider";
 import { Toaster } from "@/components/ui/toaster"
+import "@liveblocks/react-ui/styles.css";
+import "@liveblocks/react-tiptap/styles.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",

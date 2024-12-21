@@ -24,6 +24,7 @@ import TextAlign from '@tiptap/extension-text-align'
 
 import { LineHeightExtension } from '@/extension/line-height';
 import {Ruler} from './Ruler';
+import { Threads } from './Threads';
 
 export default function Editor() {
   const { setEditor } = useEditorStore();
@@ -104,6 +105,7 @@ export default function Editor() {
       <Ruler />
       <div className="min-w-max flex justify-center w-[816px] py-4 print:py-0 mx-auto print:w-full print:min-w-0">
         <EditorContent editor={editor} />
+        <Threads editor={editor} />
       </div>
     </div>
   )
