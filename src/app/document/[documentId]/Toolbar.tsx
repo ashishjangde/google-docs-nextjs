@@ -99,9 +99,9 @@ const LineHeightButton = () => {
 
 const FontSizeButton = () => {
   const { editor } = useEditorStore();
-  const  currentFontSize = editor?.getAttributes('textStyle')?.fontSize 
-  ? editor?.getAttributes('textStyle')?.fontSize.replace('px', '') 
-  : '16';
+  const currentFontSize = typeof editor?.getAttributes('textStyle')?.fontSize === 'string'
+    ? editor.getAttributes('textStyle').fontSize.replace('px', '')
+    : '16';
   const [fontSize, setFontSize] = useState(currentFontSize);
   const [inputValue, setInputValue] = useState(fontSize);
   const [editing, setEditing] = useState(false);
