@@ -25,10 +25,21 @@ import TextAlign from '@tiptap/extension-text-align'
 import { LineHeightExtension } from '@/extension/line-height';
 import {Ruler} from './Ruler';
 import { Threads } from './Threads';
+import { useStorage } from '@liveblocks/react/suspense';
 
-export default function Editor() {
+interface EditorProps {
+  initialContent?: string | undefined;
+};
+
+
+export default function Editor({ initialContent }: EditorProps) {
   const { setEditor } = useEditorStore();
-  const liveblocks = useLiveblocksExtension();
+  const liveblocks = useLiveblocksExtension({
+    initialContent,
+    offlineSupport_experimental: true,
+  });
+  const rightMargin = useStorage((state) => state.rightMargin) ?? 56;
+  const leftMargin = useStorage((state) => state.leftMargin) ?? 56;
 
   const editor = useEditor({ 
     immediatelyRender: false,
@@ -58,7 +69,7 @@ export default function Editor() {
     },
     editorProps: {
       attributes: {
-        style: 'padding-left: 56px; padding-right: 56px',
+        style: `padding-left: ${leftMargin}px; padding-right: ${rightMargin}px;`,
          class: "focus:outline-none print:border-0 bg-white border border-[#C7C7C7] flex flex-col min-h-[1054px] w-[816px] pt-10 pr-14 pb-10 cursor-text"
       },
     },
@@ -96,9 +107,7 @@ export default function Editor() {
       TableRow,
       TableHeader,
       TableCell,
-    ],
-    content: ``,
-  });
+    ]});
 
   return (
     <div className="size-full overflow-x-auto bg-[#F9FBFD] px-4 print:p-0 print:bg-white print:overflow-visible">

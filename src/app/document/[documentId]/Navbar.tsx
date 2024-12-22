@@ -17,17 +17,47 @@ import {
 import Image from 'next/image';
 import Link from "next/link"
 import DocumentInput from './DocumentInput';
-import { FileIcon, FileJsonIcon, GlobeIcon, FileTextIcon, FilePlusIcon, PrinterIcon, Undo2Icon, Redo2Icon, TextIcon, BoldIcon, ItalicIcon, UnderlineIcon, StrikethroughIcon, RemoveFormattingIcon } from 'lucide-react';
+import { FileIcon, FileJsonIcon, GlobeIcon, FileTextIcon, FilePlusIcon, PrinterIcon, Undo2Icon, Redo2Icon, TextIcon, BoldIcon, ItalicIcon, UnderlineIcon, StrikethroughIcon, RemoveFormattingIcon, TrashIcon, FilePenIcon } from 'lucide-react';
 import { BsFilePdf } from 'react-icons/bs';
 import { useEditorStore } from '@/store/use-editor-store';
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
+import { Avatars } from './Avatars';
+import Inbox from './Inbox';
+import { Doc } from '../../../../convex/_generated/dataModel';
+import { useRouter } from 'next/navigation';
+import { useMutation } from 'convex/react';
+import { api } from '../../../../convex/_generated/api';
+import { useToast } from '@/hooks/use-toast';
+import RemoveDialog from '@/components/RemoveDialog';
+import { RenameDialog } from '@/components/RenameDialog';
 
-export default function Navbar() {
+
+interface NavbarProps {
+  data: Doc<"documents">;
+};
+
+export default function Navbar({data}: NavbarProps) {
 
   const { editor } = useEditorStore();
+  const router = useRouter()
+  const mutation = useMutation(api.document.create);
+  const {toast} = useToast();
 
-
-   
+  const onNewDocument = () => {
+    mutation({
+      title: "Untitled document",
+      initialContent: ""
+    })
+    .catch(() => toast({
+      description: "Failed to create document",
+    }))
+    .then((id) => {
+      toast({
+        description: "Document created",
+      })
+      router.push(`/documents/${id}`);
+    });
+  }
   const insertTable = ({ rows, cols }: { rows: number, cols: number }) => {
     editor
       ?.chain()
@@ -51,7 +81,7 @@ export default function Navbar() {
     const blob = new Blob([JSON.stringify(content)], {
       type: "application/json",
     });
-    onDownload(blob, `document.json`)
+    onDownload(blob, `${data.title}.json`)
   };
 
   const onSaveHTML = () => {
@@ -61,7 +91,7 @@ export default function Navbar() {
     const blob = new Blob([content], {
       type: "text/html",
     });
-    onDownload(blob, `document.html`)
+    onDownload(blob, `${data.title}.html`)
   };
 
   const onSaveText = () => {
@@ -71,7 +101,7 @@ export default function Navbar() {
     const blob = new Blob([content], {
       type: "text/plain",
     });
-    onDownload(blob, `document.txt`)
+    onDownload(blob, `${data.title}t.txt`)
   };
   return (
     <nav className="flex items-center justify-between">
@@ -80,7 +110,7 @@ export default function Navbar() {
           <Image src="/logo.svg" alt="Logo" width={36} height={36} />
         </Link>
         <div className="flex flex-col">
-          <DocumentInput  />
+          <DocumentInput title={data.title} id={data._id} />
           <div className="flex">
             <Menubar className="border-none bg-transparent shadow-none h-auto p-0">
               <MenubarMenu>
@@ -112,11 +142,30 @@ export default function Navbar() {
                       </MenubarItem>
                     </MenubarSubContent>
                   </MenubarSub>
-                  <MenubarItem >
+                  <MenubarItem onClick={onNewDocument}>
                     <FilePlusIcon className="size-4 mr-2" />
                     New Document
                   </MenubarItem>
                   <MenubarSeparator />
+                  <RenameDialog documentId={data._id} initialTitle={data.title}>
+                    <MenubarItem
+                      onClick={(e) => e.stopPropagation()}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <FilePenIcon className="size-4 mr-2" />
+                      Rename
+                    </MenubarItem>
+                  </RenameDialog>
+                  <RemoveDialog documentId={data._id}>
+                    <MenubarItem
+                      onClick={(e) => e.stopPropagation()}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <TrashIcon className="size-4 mr-2" />
+                      Remove
+                    </MenubarItem>
+                  </RemoveDialog>
+                  <MenubarSeparator/>
                   <MenubarItem onClick={() => window.print()}>
                     <PrinterIcon className="size-4 mr-2" />
                     Print <MenubarShortcut>⌘P</MenubarShortcut>
@@ -202,6 +251,8 @@ export default function Navbar() {
         </div>
       </div>
       <div className="flex gap-3 items-center pl-6">
+      <Inbox />
+      <Avatars />
       <OrganizationSwitcher
       afterCreateOrganizationUrl={'/'}
       afterLeaveOrganizationUrl='/'
