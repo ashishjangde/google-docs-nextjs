@@ -11,10 +11,8 @@ import {
   import { 
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogTitle,
-    DialogTrigger,
  } from '@/components/ui/dialog';
   
 export default function page() {

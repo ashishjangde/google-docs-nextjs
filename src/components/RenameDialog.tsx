@@ -54,7 +54,7 @@ export const RenameDialog = ({
       
       toast({ title: "Document updated successfully" });
       setOpen(false);
-    } catch (error) {
+    } catch{
       toast({
         title: "Failed to update document",
         variant: "destructive"

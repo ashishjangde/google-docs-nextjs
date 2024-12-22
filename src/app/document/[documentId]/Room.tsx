@@ -29,7 +29,7 @@ export function Room({ children }: { children: ReactNode }) {
         
         const user = await getusers();
         setUser(user);
-      } catch (error) {
+      } catch {
         toast({
           description: "Failed to fetch users",
         })

@@ -1,6 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { BoldIcon, Italic, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, PrinterIcon, Redo, RemoveFormattingIcon, SpellCheckIcon, Underline, Undo, ChevronDownIcon, Palette, Type, HighlighterIcon, Link2Icon, Image, ImageIcon, Upload, Link2, UploadCloud, Link, MoveLeftIcon, AlignLeft, AlignRightIcon, AlignCenter, AlignRight, AlignJustify, AlignLeftIcon, ListIcon, ListOrdered, MinusIcon, PlusIcon, ListCollapseIcon } from 'lucide-react';
+import { BoldIcon, Italic, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, PrinterIcon, Redo, RemoveFormattingIcon, SpellCheckIcon, Underline, Undo, ChevronDownIcon, HighlighterIcon, Link2Icon, ImageIcon, Upload, Link, AlignLeft, AlignCenter, AlignRight, AlignJustify, ListIcon, ListOrdered, MinusIcon, PlusIcon, ListCollapseIcon } from 'lucide-react';
 import React, {  useState } from 'react';
 import { useEditorStore } from '@/store/use-editor-store';
 import { Separator } from '@/components/ui/separator';
